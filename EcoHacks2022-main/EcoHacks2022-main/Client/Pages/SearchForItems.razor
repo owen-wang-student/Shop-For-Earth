@@ -1,0 +1,42 @@
+﻿@page "/SearchForItems"
+@inject HttpClient Http
+@using System.Net
+<style>
+    body {
+        background-image: url(https://media.discordapp.net/attachments/1008200829716664421/1016036843290108024/shop_for_earth_background.png?width=1920&height=1080);
+    }
+</style>
+<div style="text-align: center">
+    <h1>
+        <span style="color:#05472A">SHOP </span>
+        <span style="color:#006400">FOR </span>
+        <span style="color:#228B22">EARTH</span>
+    </h1>
+    <h5>A healthier way to shop online.</h5>
+    <input @bind="_searchQuery" type="text" placeholder="Search...">
+    <button @onclick="_search">Search</button>
+</div>
+@if (_applicableProducts is not null)
+{
+    for (var i = 0; i < _applicableProducts.Length; i++)
+    {
+        <span>- </span>
+        <a href="@_applicableProducts[i]" target="_blank">@_applicableProducts[i]</a>
+        <br/>
+    }
+}else 
+{
+    <h2>No Results.</h2>
+}
+
+@code {
+    private string _searchQuery = string.Empty;
+    private string[]? _applicableProducts;
+
+    private async void _search()
+    {
+        HttpResponseMessage result = await Http.PostAsJsonAsync("Search/NewItem", _searchQuery);
+        _applicableProducts = await result.Content.ReadFromJsonAsync<string[]?>();
+        StateHasChanged();
+    }
+}
